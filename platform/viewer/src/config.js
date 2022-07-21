@@ -27,6 +27,13 @@ export function setConfiguration(appConfig) {
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
   OHIF.user.getAccessToken = () => {
+
+    // Access token is our cookie ID
+    const cookieID = ('; ' + document.cookie).split(`; SessionToken=`).pop().split(';')[0];
+    if (cookieID) {
+      return cookieID;
+    }
+
     // TODO: Get the Redux store from somewhere else
     const state = window.store.getState();
     if (!state.oidc || !state.oidc.user) {
@@ -43,7 +50,7 @@ export function setConfiguration(appConfig) {
   };
 
   cornerstoneWADOImageLoader.configure({
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
       const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
       if (headers.Authorization) {
