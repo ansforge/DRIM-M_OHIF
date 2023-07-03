@@ -4,7 +4,6 @@ function transpileJavaScript(mode) {
   const exclude =
     mode === 'production'
       ? excludeNodeModulesExcept([
-          'vtk.js',
           // 'dicomweb-client',
           // https://github.com/react-dnd/react-dnd/blob/master/babel.config.js
           'react-dnd',
@@ -21,17 +20,20 @@ function transpileJavaScript(mode) {
       : excludeNodeModulesExcept([]);
 
   return {
-    test: /\.jsx?$/,
+    // Include mjs, ts, tsx, js, and jsx files.
+    test: /\.(mjs|ts|js)x?$/,
     // These are packages that are not transpiled to our lowest supported
     // JS version (currently ES5). Most of these leverage ES6+ features,
     // that we need to transpile to a different syntax.
-    exclude,
+    exclude: [/(codecs)/, /(dicomicc)/, exclude],
     loader: 'babel-loader',
     options: {
       // Find babel.config.js in monorepo root
       // https://babeljs.io/docs/en/options#rootmode
       rootMode: 'upward',
       envName: mode,
+      cacheCompression: false,
+      cacheDirectory: true,
     },
   };
 }
